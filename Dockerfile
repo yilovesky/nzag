@@ -7,13 +7,12 @@ RUN apk add --no-cache curl wget bash ca-certificates
 ENV NZ_SERVER="zn.117.de5.net:80"
 ENV NZ_CLIENT_SECRET="ZCmpxMlhqwi25icfCDHGSYBl13kwBk2D"
 
-# 1. 使用官方脚本下载并解压 Agent，使用 --disable-service 避开权限报错
-# 2. 将二进制文件移动到当前目录并清理垃圾
-RUN curl -L https://raw.githubusercontent.com/nezhahq/scripts/main/agent/install.sh -o agent.sh && \
-    chmod +x agent.sh && \
-    ./agent.sh install_agent ${NZ_SERVER} ${NZ_CLIENT_SECRET} --tls=false --disable-service && \
-    mv /opt/nezha/agent/nezha-agent ./ && \
-    rm -rf /opt/nezha agent.sh
+# 直接下载 v1.14.1 版本的二进制文件（手动指定版本最稳）
+# 绕过 install.sh，直接在当前目录解压
+RUN wget https://github.com/nezhahq/agent/releases/download/v1.14.1/nezha-agent_linux_amd64.tar.gz && \
+    tar -zxvf nezha-agent_linux_amd64.tar.gz && \
+    chmod +x nezha-agent && \
+    rm -f nezha-agent_linux_amd64.tar.gz
 
 # 运行二进制文件
 CMD ./nezha-agent -s ${NZ_SERVER} -p ${NZ_CLIENT_SECRET} --report-delay 3 --tls=false
