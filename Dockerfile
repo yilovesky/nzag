@@ -1,15 +1,15 @@
 FROM alpine:latest
 
-# 安装必要的系统依赖
+# 安装必要依赖
 RUN apk add --no-cache curl wget bash ca-certificates
 
-# 设置哪吒参数（已根据你提供的信息填好）
+# 设置变量
 ENV NZ_SERVER="zn.117.de5.net:80"
 ENV NZ_CLIENT_SECRET="ZCmpxMlhqwi25icfCDHGSYBl13kwBk2D"
 
-# 下载并启动 Agent
-# 注意：因为你的服务器端口是 80，通常不需要开启 TLS
-CMD curl -L https://raw.githubusercontent.com/nezhahq/scripts/main/agent/install.sh -o agent.sh && \
-    chmod +x agent.sh && \
-    env NZ_SERVER=${NZ_SERVER} NZ_TLS=false NZ_CLIENT_SECRET=${NZ_CLIENT_SECRET} ./agent.sh && \
-    tail -f /dev/null
+# 下载适合的二进制文件并直接启动
+# 注意：我们这里手动指定运行参数，绕过脚本安装过程
+CMD curl -L https://github.com/nezhahq/agent/releases/latest/download/nezha-agent_linux_amd64.tar.gz -o nezha.tar.gz && \
+    tar -zxvf nezha.tar.gz && \
+    chmod +x nezha-agent && \
+    ./nezha-agent -s ${NZ_SERVER} -p ${NZ_CLIENT_SECRET} --report-delay 3 --tls=false
