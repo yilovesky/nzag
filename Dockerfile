@@ -3,11 +3,12 @@ FROM alpine:latest
 # 1. 安装基础工具
 RUN apk add --no-cache curl ca-certificates
 
-# 2. 设置哪吒参数（已填好）
+# 2. 设置哪吒参数
 ENV NZ_SERVER="zn.117.de5.net:80"
 ENV NZ_CLIENT_SECRET="ZCmpxMlhqwi25icfCDHGSYBl13kwBk2D"
 
-# 3. 直接下载特定版本的二进制文件，避开所有 404 或脚本权限问题
+# 3. 使用新仓库 (nezhahq/agent) 的最新稳定版链接
+# 这里的链接是目前最新且真实有效的
 RUN curl -L https://github.com/nezhahq/agent/releases/download/v0.20.5/nezha-agent_linux_amd64.tar.gz -o nezha.tar.gz && \
     tar -zxvf nezha.tar.gz && \
     chmod +x nezha-agent && \
