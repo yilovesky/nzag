@@ -1,15 +1,17 @@
+# 第一阶段：从哪吒官方镜像里直接把程序“借”出来
+FROM ghcr.io/nezhahq/agent:latest AS binary-source
+
+# 第二阶段：构建你自己的运行环境
 FROM alpine:latest
 
-# 1. 安装基础工具
-RUN apk add --no-cache curl ca-certificates
+# 1. 安装基础运行库
+RUN apk add --no-cache ca-certificates libc6-compat
 
-# 2. 这是你最开始用的那个官方链接，但我换了一个更稳的 CDN 加速前缀
-# 这样可以绕过 GitHub 对 Koyeb IP 的限制
-RUN curl -L https://ghproxy.net/https://github.com/nezhahq/agent/releases/latest/download/nezha-agent_linux_amd64.tar.gz -o nezha.tar.gz && \
-    tar -zxvf nezha.tar.gz && \
-    chmod +x nezha-agent && \
-    rm nezha.tar.gz
+# 2. 核心操作：直接从第一阶段拷贝现成的 nezha-agent 文件，完全不联网下载
+COPY --from=binary-source /dashboard/nezha-agent /nezha-agent
 
-# 3. 运行
-# 参数已根据你的信息填好
-CMD ./nezha-agent -s zn.117.de5.net:80 -p ZCmpxMlhqwi25icfCDHGSYBl13kwBk2D --report-delay 3 --tls=false
+# 3. 赋予执行权限
+RUN chmod +x /nezha-agent
+
+# 4. 启动指令（已填好你的参数）
+CMD /nezha-agent -s zn.117.de5.net:80 -p ZCmpxMlhqwi25icfCDHGSYBl13kwBk2D --report-delay 3 --tls=false
