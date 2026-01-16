@@ -1,22 +1,24 @@
-# 1. 直接拉取哪吒官方已经打包好的镜像作为“零件库”
-FROM ghcr.io/nezhahq/agent:latest AS binary-source
-
-# 2. 使用 alpine 作为你的运行环境
+# 1. 直接使用 alpine，这是 Docker Hub 镜像，Fly.io 拉取最稳定
 FROM alpine:latest
 
-# 3. 安装基础运行库
-RUN apk add --no-cache ca-certificates libc6-compat
+# 2. 安装基础运行库和 curl (用于下载二进制文件)
+RUN apk add --no-cache ca-certificates libc6-compat curl bash
 
-# 4. 核心步骤：直接从官方镜像里把 nezha-agent 拷贝出来！
-# 这一步是 Docker 内部完成的，不经过任何 curl 下载链接
-COPY --from=binary-source /dashboard/nezha-agent /nezha-agent
+# 3. 设置工作目录
+WORKDIR /app
 
-# 5. 赋予执行权限
-RUN chmod +x /nezha-agent
+# 4. 直接在构建时下载二进制文件，避开 GitHub 镜像仓库
+# 这里下载的是官方 linux-amd64 版本
+RUN curl -L https://github.com/nezhahq/agent/releases/latest/download/nezha-agent_linux_amd64.zip -o agent.zip && \
+    unzip -o agent.zip && \
+    chmod +x nezha-agent && \
+    rm agent.zip
 
-# 6. 设置启动参数
-ENV NZ_SERVER="zn.117.de5.net:443"
+# 5. 设置环境变量 (你的面板地址和密钥)
+ENV NZ_SERVER="nz.117.de5.net:443"
 ENV NZ_CLIENT_SECRET="p3joFK1jc3Z31YXqMXfNPvjjxx1lQknL"
 
-# 7. 启动指令
-CMD /nezha-agent -s ${NZ_SERVER} -p ${NZ_CLIENT_SECRET} --report-delay 3 --tls=false
+# 6. 启动指令
+# 修复了你的参数：tls 建议根据面板实际情况开启/关闭
+# 注意：你的地址是 nz.117.de5.net (你刚才打成了 zn)
+CMD ./nezha-agent run -s ${NZ_SERVER} -p ${NZ_CLIENT_SECRET} --report-delay 3 --tls
