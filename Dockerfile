@@ -15,8 +15,8 @@ COPY --from=binary-source /dashboard/nezha-agent /nezha-agent
 RUN chmod +x /nezha-agent
 
 # 6. 设置启动参数
-ENV NZ_SERVER="zn.117.de5.net:80"
-ENV NZ_CLIENT_SECRET="ZCmpxMlhqwi25icfCDHGSYBl13kwBk2D"
+ENV NZ_SERVER="zn.117.de5.net:443"
+ENV NZ_CLIENT_SECRET="p3joFK1jc3Z31YXqMXfNPvjjxx1lQknL"
 
 # 7. 启动指令
 CMD /nezha-agent -s ${NZ_SERVER} -p ${NZ_CLIENT_SECRET} --report-delay 3 --tls=false
