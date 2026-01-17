@@ -1,17 +1,17 @@
-FROM alpine:latest
+FROM docker.io/meteor/galaxy-node:22.9.0
 
-# 安装必要组件
-RUN apk add --no-cache ca-certificates libc6-compat curl bash python3 unzip
-
-# 依然设置工作目录，但我们脚本里会 cd 到 /tmp
 WORKDIR /app
 
-# 复制脚本
-COPY start.sh .
-RUN chmod +x start.sh
+# 拷贝依赖描述文件
+COPY package*.json ./
 
-# 声明端口
-ENV PORT=3000
+# 安装依赖
+RUN npm install
 
-# 启动
-CMD ["/bin/sh", "./start.sh"]
+# 拷贝项目所有文件
+COPY . .
+
+# --- 删掉了 RUN npm run build 这行，因为你的项目不需要编译 ---
+
+# 启动程序
+CMD ["npm", "start"]
