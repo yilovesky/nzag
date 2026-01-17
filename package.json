@@ -1,18 +1,18 @@
-FROM docker.io/meteor/galaxy-node:22.9.0
-
-WORKDIR /app
-
-# 1. 拷贝依赖定义文件
-COPY package*.json ./
-
-# 2. 安装依赖
-RUN npm install
-
-# 3. 拷贝剩余的所有源代码 (index.js 等)
-COPY . .
-
-# 4. 【删除/注释掉原来的 RUN npm run build】
-# 因为你的 package.json 里没有 build 命令
-
-# 5. 启动应用 (建议使用 JSON 格式以避免信号传输问题)
-CMD ["npm", "start"]
+{
+  "name": "nzag",
+  "version": "1.0.0",
+  "description": "Thsi is a node project",
+  "main": "index.js",
+  "author": "eooce",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "axios": "latest",
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}
