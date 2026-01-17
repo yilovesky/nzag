@@ -1,18 +1,16 @@
-FROM docker.io/meteor/galaxy-node:22.9.0
+# 使用包含 Node 和 Python 的镜像
+FROM node:22-bullseye-slim
 
-# 设置工作目录
+# 安装脚本运行所需的工具
+RUN apt-get update && apt-get install -y curl unzip python3 && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-# 先拷贝 package.json
-COPY package*.json ./
-
-# 安装依赖
-RUN npm install
-
-# 拷贝项目剩余文件
+# 拷贝所有文件
 COPY . .
 
-# --- 注意：这里已经删掉了 RUN npm run build ---
+# 给予脚本执行权限
+RUN chmod +x "开始脚本"
 
-# 启动程序
+# 启动 (对应 package.json 里的 start)
 CMD ["npm", "start"]
