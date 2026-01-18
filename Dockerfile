@@ -1,18 +1,21 @@
-# 使用 Debian 版本的镜像以便安装系统工具  ← 注释掉或删除这行说明
 FROM node:22-alpine
 
-# 安装脚本运行所需的工具（Alpine 用 apk）
+# 安装必要工具
 RUN apk update --no-cache && \
-    apk add --no-cache curl unzip python3 py3-pip && \
+    apk add --no-cache curl unzip python3 && \
     rm -rf /var/cache/apk/*
 
 WORKDIR /app
 
-# 拷贝所有文件
+# 拷贝并安装 Node 依赖
+COPY package.json ./
+RUN npm install
+
+# 拷贝剩余文件
 COPY . .
 
-# 赋予脚本执行权限
+# 权限设置
 RUN chmod +x start.sh
 
-# 启动 (推荐通过 sh 直接运行)
+# 启动
 CMD ["sh", "./start.sh"]
